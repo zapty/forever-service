@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+
+var platforms = require('../lib/platforms');
+
+platforms.get(function(err, platform){
+
+	if(err || !platform){
+		console.log('forever-service version '+require('../package.json').version);
+		console.error('This platform is not yet supported by forever-service');
+		console.error('To help us add this platform, please contibute to https://github.com/zapty/forever-service');
+		return;
+	}
+
+	var program = require('commander');
+
+	program
+		.version(require('../package.json').version)
+
+	program
+		.command('install [service]')
+		.option('-s, --script [script]','Script to run as service e.g. app.js, defaults to app.js')
+		.option('','')
+		.option('--minUptime [value]','Minimum uptime (millis) for a script to not be considered "spinning", default 5000')
+		.option('','')
+		.option('--spinSleepTime [value]','Time to wait (millis) between launches of a spinning script., default 2000')
+		.option('','')
+		.option('--noGracefulShutdown','Disable graceful shutdown')
+		.option('','')
+		.option('-t --forceKillWaitTime [waittime]','Time to wait before force killing; after failed graceful stop')
+		.option('','defaults to 5 seconds, after which entire process tree is forcibly terminated')
+		.option('','')
+		.option('-f --foreverOptions " [options]"','Extra command line options for forever')
+		.option('','e.g. -f " --watchDirectory /your/watch/directory -w -c /custom/cli" etc..')
+		.option('','NOTE: a mandatory space is required after double quotes, if begining with -')
+		.description(
+			'Install node script (defaults to app.js in current directory) as service via forever\n\n'+
+			platform.ctx.help?platform.ctx.help:''
+		)
+		.action(function(service, options){
+	
+			if(err) return console.error('This platform is not yet supported');
+
+			console.log('Platform - '+platform.ctx.os);
+
+			var ctx = {service: service};
+
+			if(options.script) ctx.script = options.script;
+			if(options.minUptime) ctx.minUptime = options.minUptime;
+			if(options.spinSleepTime) ctx.spinSleepTime = options.spinSleepTime;
+			if(options.noGracefulShutdown) ctx.killSignal = 'SIGKILL'; //Default is SIGTERM so non graceful shutdown makes it SIGKILL
+			if(options.forceKillWaitTime) ctx.forceKillWaitTime = options.forceKillWaitTime;
+			if(options.foreverOptions) ctx.foreverOptions = options.foreverOptions;
+
+			console.log(ctx);
+		});
+
+
+
+	program.parse(process.argv);
+
+
+
+
+
+});
+

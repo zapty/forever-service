@@ -1,0 +1,44 @@
+{
+  "name": "forever-service",
+  "version": "0.1.0",
+  "preferGlobal": "true",
+  "description": "Provision nodejs scripts as service via forever",
+  "main": "index.js",
+  "dependencies": {
+    "swig": "~1.4.2",
+    "commander": "~2.3.0",
+    "fs-extra": "~0.11.0",
+    "async": "~0.9.0",
+    "shelljs": "~0.3.0",
+    "walker": "~1.0.6"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "scripts": {
+    "test": "mocha test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zapty/forever-service.git"
+  },
+  "keywords": [
+    "forever",
+    "nodejs",
+    "aws",
+    "amazon",
+    "linux",
+    "initd",
+    "service",
+    "logrotate"
+  ],
+  "bin": {
+    "forever-service": "./bin/forever-service"
+  },
+  "author": "Arvind Agarwal",
+  "bugs": {
+    "url": "https://github.com/zapty/forever-service/issues"
+  },
+  "homepage": "https://github.com/zapty/forever-service"
+}
