@@ -109,24 +109,40 @@ forever-service version 0.x.x
 ```
 Examples
 --------
-1. Provision a service 'test' with app.js script in current directory
+* Provision a service 'test' with app.js script in current directory
 
-	```
-	$ forever-service install test
-	```
+```
+$ forever-service install test
+```
+This command will setup initd script and provision service using chkconfig,
+Create logrotate scripts
 
 
-2. Provision a service 'test' with main.js script in current directory
+
+* Provision a service 'test' with main.js script in current directory
 
 ```
 $ forever-service install test --script main.js
 ```
 
-3. Custom options for forever 
+
+
+* Custom options for forever 
 
 ```
 $ forever-service install test -f " -watchDirectory /your/watch/directoyr -w"
 ```
+
+
+
+* Delete service
+
+```
+$ forever-service delete test
+```
+This command will stop service if running, clean up all provisioned files and service
+
+
 
 Roadmap
 -------
