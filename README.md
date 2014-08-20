@@ -111,9 +111,9 @@ Examples
 --------
 1. Provision a service 'test' with app.js script in current directory
 
-```
-$ forever-service install test
-```
+	```
+	$ forever-service install test
+	```
 
 
 2. Provision a service 'test' with main.js script in current directory
