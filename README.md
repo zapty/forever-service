@@ -112,9 +112,9 @@ Examples
 * Provision a service 'test' with app.js script in current directory
 
 ```
-$ forever-service install test
+$ sudo forever-service install test
 ```
-This command will setup initd script and provision service using chkconfig,
+On Amazon Linux, This command will setup initd script and provision service using chkconfig,
 Create logrotate scripts
 
 
@@ -122,7 +122,7 @@ Create logrotate scripts
 * Provision a service 'test' with main.js script in current directory
 
 ```
-$ forever-service install test --script main.js
+$ sudo forever-service install test --script main.js
 ```
 
 
@@ -130,7 +130,7 @@ $ forever-service install test --script main.js
 * Custom options for forever 
 
 ```
-$ forever-service install test -f " -watchDirectory /your/watch/directoyr -w"
+$ sudo forever-service install test -f " -watchDirectory /your/watch/directoyr -w"
 ```
 
 
@@ -138,7 +138,7 @@ $ forever-service install test -f " -watchDirectory /your/watch/directoyr -w"
 * Delete service
 
 ```
-$ forever-service delete test
+$ sudo forever-service delete test
 ```
 This command will stop service if running, clean up all provisioned files and service
 
@@ -146,5 +146,6 @@ This command will stop service if running, clean up all provisioned files and se
 
 Roadmap
 -------
-Support other Linux distros, OSX, Windows 
+Support other Linux distros, OSX, Windows etc.
+
 Contributions are welcome, please send pull requests
