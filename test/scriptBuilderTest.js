@@ -36,11 +36,14 @@ describe('Generate initd script', function(){
 					service: "test",
 					displayname:"Test service"
 				},
-				function(err, script){
+				function(err, scripts){
 					if(err) throw err;
 
-					fs.writeFileSync('testinitd.log', script.initd);
-					//console.log(script);
+					scripts.should.have.property('initd');	
+					scripts.should.have.property('logrotate');
+	
+					//fs.writeFileSync('testinitd.log', scripts.initd);
+					//console.log(scripts.logrotate);
 					done();
 				}
 			);

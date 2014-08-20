@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-
+var installer = require('../lib/installer');
 var platforms = require('../lib/platforms');
 
 platforms.get(function(err, platform){
-
-	if(err || !platform){
-		console.log('forever-service version '+require('../package.json').version);
+	console.log('forever-service version '+require('../package.json').version+'\n');
+	if(err || !platform){		
 		console.error('This platform is not yet supported by forever-service');
 		console.error('To help us add this platform, please contibute to https://github.com/zapty/forever-service');
 		return;
@@ -16,6 +15,7 @@ platforms.get(function(err, platform){
 
 	program
 		.version(require('../package.json').version)
+		
 
 	program
 		.command('install [service]')
@@ -27,41 +27,110 @@ platforms.get(function(err, platform){
 		.option('','')
 		.option('--noGracefulShutdown','Disable graceful shutdown')
 		.option('','')
-		.option('-t --forceKillWaitTime [waittime]','Time to wait before force killing; after failed graceful stop')
-		.option('','defaults to 5 seconds, after which entire process tree is forcibly terminated')
+		.option('-t --forceKillWaitTime [waittime]','Time to wait in milliseconds before force killing; after failed graceful stop')
+		.option('','defaults to 5000 ms, after which entire process tree is forcibly terminated')
 		.option('','')
 		.option('-f --foreverOptions " [options]"','Extra command line options for forever')
 		.option('','e.g. -f " --watchDirectory /your/watch/directory -w -c /custom/cli" etc..')
 		.option('','NOTE: a mandatory space is required after double quotes, if begining with -')
+		.option('','')
+		.option('--start','Start service after provisioning')
+		.option('','')
+		.option('--nologroate','Do not generate logrotate script')
+		.option('','')
+		.option('--logrotateFrequency [frequency]','Frequency of logrotation')
+		.option('','valid values are daily, weekly, monthly, "size 100k" etc, default daily')
+		.option('','')
+		.option('--logrotateMax [value]','Maximm logrotated files to retain, default 10 (logrotate parameter)')
+		.option('','')
+		.option('--logrotateCompress', 'Enable compression for logrotate')
+		.option('','')
 		.description(
-			'Install node script (defaults to app.js in current directory) as service via forever\n\n'+
-			platform.ctx.help?platform.ctx.help:''
+			'Install node script (defaults to app.js in current directory) as service via forever\n\n'
 		)
 		.action(function(service, options){
-	
-			if(err) return console.error('This platform is not yet supported');
 
-			console.log('Platform - '+platform.ctx.os);
+			if(!service){
+				console.error('Service name missing');
+				return 3;
+			}
+			console.log('Platform - '+platform.os);
 
-			var ctx = {service: service};
+			var ctx = Object.create(platform);
+			ctx.service = service;
 
-			if(options.script) ctx.script = options.script;
+			if(options.script) 
+				ctx.script = options.script;
+			else
+				ctx.script = 'app.js';
+
 			if(options.minUptime) ctx.minUptime = options.minUptime;
 			if(options.spinSleepTime) ctx.spinSleepTime = options.spinSleepTime;
 			if(options.noGracefulShutdown) ctx.killSignal = 'SIGKILL'; //Default is SIGTERM so non graceful shutdown makes it SIGKILL
 			if(options.forceKillWaitTime) ctx.forceKillWaitTime = options.forceKillWaitTime;
 			if(options.foreverOptions) ctx.foreverOptions = options.foreverOptions;
+			if(options.nologroate) ctx.nologroate = true;
+			if(options.logrotateFrequency) ctx.logrotateFrequency = options.logrotateFrequency;
+			if(options.logrotateMax) ctx.logrotateMax = options.logrotateMax;
+			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
 
-			console.log(ctx);
+			if( !installer.validateScriptName(ctx.script) ){
+				console.error(ctx.script+' not found');
+				return;
+			}
+
+			installer.install(ctx, function(err, result){
+				if(err){
+					console.error('Could not provision service');
+					console.error(err);
+					return;
+				}
+				console.log(ctx.service+' provisioned successfully\n');
+
+				if(result.help){
+					console.log(result.help);
+				}
+
+				if(options.start && ctx.installer.startService){
+					ctx.installer.startService(ctx, function(err){
+						if(err){
+							console.error('Service could not be started');
+						} else {
+							console.log('Service started successfully');
+						}
+
+					});
+				}
+			});
 		});
 
 
+	program
+		.command('delete [service]')
+		.description('Delete all provisioned files for the service, will stop service if running before delete')
+		.action(function(service){
+			if(!service){
+				console.error('Service name missing');
+				return 3;
+			}
+			
+			console.log('Platform - '+platform.os);
+
+			var ctx = Object.create(platform);
+			ctx.service = service;
+
+			installer.delete(ctx, function(err, data){
+				if(err){
+					console.error('Could not delete service');
+					console.error(err);
+					return;
+				}
+				console.log('Service '+ctx.service+' deleted successfully');
+			});
+
+		});
+
 
 	program.parse(process.argv);
-
-
-
-
-
 });
 

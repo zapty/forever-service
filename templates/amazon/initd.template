@@ -49,6 +49,12 @@ checkpidexists() {
 
 
 start() {
+	STATUS=$(forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	if ! [ -z "$STATUS" ]; then
+		echo "Service {{service}} already running"
+		return 0
+	fi
+
 	echo  "Starting {{service}}"
 
 	# move to the directory from where the inital forever script was launched so that even if it is relative it works as expected

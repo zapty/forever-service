@@ -11,6 +11,7 @@ exports.initialize=function(){
 		if( contents && contents.match(/Amazon Linux/g) ){
 			return {
 				os: contents,
+				platform: 'amazon',
 				help: 'Command to interact with service, sudo service [service] start|stop|restart|status'
 			};
 		}
@@ -22,8 +23,20 @@ exports.install=function(ctx, scripts, callback){
 	//Install the init.d file..
 	if(ctx.platform === 'amazon'){
 		var serviceFile = '/etc/init.d/'+ctx.service;
+		var logrotateFile = '/etc/logrotate.d/'+ctx.service;
+
+
 		async.series(
 			[
+				function(callback){
+					fs.exists(serviceFile, function(exists){
+						if(exists){
+							callback("Service is already present");
+						} else {
+							callback(null);
+						}
+					});
+				},
 				function(callback){
 					fs.writeFile(serviceFile, scripts['initd'], callback);
 				},
@@ -36,10 +49,91 @@ exports.install=function(ctx, scripts, callback){
 					shell.exec('chkconfig --add '+ctx.service, {async: true}, function(code, output){
 						callback(code != 0?'Could not add service '+ctx.service+'\n'+output:null); //error if non 0 exit code
 					});
+				},
+				function(callback){
+					if(ctx.nologroate) return callback(null);
+					fs.writeFile(logrotateFile, scripts['logrotate'], callback);
 				}
 			],
 			function(err, results){
-				if(err) console.error('Error while provisioing service\n'+err);
+				//if(err) console.error('Error while provisioing service\n'+err);
+				callback(err, 
+					{
+						help: 'Commands to interact with service '+ctx.service+'\n'+
+							  'Start   - "sudo service '+ctx.service+' start"\n'+
+							  'Stop    - "sudo service '+ctx.service+' stop"\n'+
+							  'Status  - "sudo service '+ctx.service+' status"\n'+
+							  'Restart - "sudo service '+ctx.service+' restart"'
+					}
+				);
+			}
+		);
+	}
+}
+
+exports.startService=function(ctx, callback){
+	shell.exec('sudo service '+ctx.service+' start', {async: true}, function(code, output){
+		callback(code != 0); //error if non 0 exit code
+	});
+}
+
+
+function stopService(ctx, callback){
+	shell.exec('sudo service '+ctx.service+' stop', {async: true}, function(code, output){
+		callback(code != 0); //error if non 0 exit code
+	});
+}
+
+exports.stopService = stopService;
+
+exports.delete=function(ctx, scripts, callback){
+	if(ctx.platform === 'amazon'){
+		var serviceFile = '/etc/init.d/'+ctx.service;
+		var logrotateFile = '/etc/logrotate.d/'+ctx.service;
+
+		async.series(
+			[
+				function(callback){
+					fs.exists(serviceFile, function(exists){
+						if(!exists){
+							callback("Service not found");
+						} else {
+							callback(null);
+						}
+					});
+				},
+				function(callback){
+					fs.readFile(serviceFile, 'utf8', function(err,data){
+						if(err) return callback(err);
+
+						if(data.match(/forever\-service/g)){
+							callback(null);
+						} else {
+							callback("Service not provisioned with forever-service");
+						}
+					});
+				},
+				function(callback){
+					stopService(ctx, callback);
+				},
+				function(callback){
+					shell.exec('chkconfig --del '+ctx.service, {async: true}, function(code, output){
+						callback(code != 0?'Could not delete service '+ctx.service+'\n'+output:null); //error if non 0 exit code
+					});
+				},
+				function(callback){
+					fs.unlink(serviceFile, callback);
+				},
+				function(callback){
+					fs.exists(logrotateFile, function(exists){
+						if(exists){
+							fs.unlink(logrotateFile, callback);
+						} else callback(null);
+					});
+				}
+
+			],
+			function(err, results){
 				callback(err);
 			}
 		);
