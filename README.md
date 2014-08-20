@@ -3,20 +3,20 @@ forever-service
 
 Make provisioning node script as a service simple. 
 
-While node is great technology, and targetted towards server development. It is surprising to find that there is no standard tool to provision script as a service. Forever kind of tools comes close but they only daemonize the process and not provision as service; which can be automatically started. To make matter worse, each OS and Linux distro has its own unique way to provisioning the services correctly.
+We love nodejs for server development. But, It is surprising to find that there is no standard tool to provision script as a service. Forever kind of tools comes close but they only demonize the process and not provision as service; which can be automatically started. To make matter worse, each OS and Linux distro has its own unique way to provisioning the services correctly.
 
 Goals
 -----
 1. Make an universal service installer across various Linux distros and other OS.
-2. Configure other useful things such as Logrotation scripts, port monitoring scripts etc.
+2. Automatically configure other useful things such as Logrotation scripts, port monitoring scripts etc.
 
 Platforms supported
 -------------------
 * Amazon Linux
 * more to come..
 
-Prerequsite
------------
+Prerequisite
+------------
 forever must be installed globally using 
 
 ```npm install -g forever```
@@ -131,4 +131,4 @@ $ forever-service install test -f " -watchDirectory /your/watch/directoyr -w"
 Roadmap
 -------
 Support other Linux distros, OSX, Windows 
-Contirbutions are welcome, please send me pull requests
+Contributions are welcome, please send pull requests
