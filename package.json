@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "preferGlobal": "true",
   "description": "Provision nodejs scripts as service via forever",
-  "main": "index.js",
+  "main": "lib/api.js",
   "dependencies": {
     "swig": "~1.4.2",
     "commander": "~2.3.0",
