@@ -87,7 +87,7 @@ forever-service version 0.x.x
     --logrotateFrequency [frequency]   Frequency of logrotation
                                        valid values are daily, weekly, monthly, "size 100k" etc, default daily
                                        
-    --logrotateMax [value]             Maximm logrotated files to retain, default 10 (logrotate parameter)
+    --logrotateMax [value]             Maximum logrotated files to retain, default 10 (logrotate parameter)
                                        
     --logrotateCompress                Enable compression for logrotate
 

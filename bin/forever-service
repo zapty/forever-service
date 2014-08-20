@@ -41,7 +41,7 @@ platforms.get(function(err, platform){
 		.option('--logrotateFrequency [frequency]','Frequency of logrotation')
 		.option('','valid values are daily, weekly, monthly, "size 100k" etc, default daily')
 		.option('','')
-		.option('--logrotateMax [value]','Maximm logrotated files to retain, default 10 (logrotate parameter)')
+		.option('--logrotateMax [value]','Maximum logrotated files to retain, default 10 (logrotate parameter)')
 		.option('','')
 		.option('--logrotateCompress', 'Enable compression for logrotate')
 		.option('','')
