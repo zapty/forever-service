@@ -30,7 +30,13 @@
     "linux",
     "initd",
     "service",
-    "logrotate"
+    "logrotate",
+    "reboot",
+    "start",
+    "service",
+    "amazon linux",
+    "centos",
+    "redhat"
   ],
   "bin": {
     "forever-service": "./bin/forever-service"

@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #
 #	/etc/rc.d/init.d/{{service}}

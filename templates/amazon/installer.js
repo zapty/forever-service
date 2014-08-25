@@ -8,7 +8,7 @@ exports.initialize=function(){
 
 	if(fs.existsSync('/etc/system-release')){
 		var contents = fs.readFileSync('/etc/system-release','utf8');
-		if( contents && contents.match(/Amazon Linux/g) ){
+		if( contents && contents.match(/(Amazon Linux)|(Red Hat)|(CentOS)/g) ){
 			return {
 				os: contents,
 				platform: 'amazon',
