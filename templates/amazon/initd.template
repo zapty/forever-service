@@ -5,7 +5,7 @@
 #	{{service}} - Provisioned using forever-service
 #	
 #
-# chkconfig: 2345 80 20
+# chkconfig: 2345 90 10 
 # description: forever-service startup script for node script based service {{service}}, uses forever to start the service
 # 
 
