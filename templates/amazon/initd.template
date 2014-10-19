@@ -48,7 +48,7 @@ checkpidexists() {
 
 
 start() {
-	STATUS=$(forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
 	if ! [ -z "$STATUS" ]; then
 		echo "Service {{service}} already running"
 		return 0
@@ -59,7 +59,7 @@ start() {
 	# move to the directory from where the inital forever script was launched so that even if it is relative it works as expected
 	cd {{cwd}}
 
-	forever \
+	{{foreverPath}}forever \
 	--pidFile $PIDFILE \
 	-a \
 	-l $LOGFILE \
@@ -85,7 +85,7 @@ stop() {
 
 	PID=$(<$PIDFILE)
 
-	forever stop {{service}} 2>&1 >/dev/null
+	{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null
 
 	CURRENTWAITTIME=$KILLWAITTIME
 	# wait for some time before forcefully killing the process
@@ -113,7 +113,7 @@ stop() {
 }
 
 status() {
-	STATUS=$(forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
 	if [ -z "$STATUS" ]; then
 		echo "{{service}} is not running"
 		RETVAL=3

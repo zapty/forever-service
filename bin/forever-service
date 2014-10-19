@@ -45,6 +45,8 @@ platforms.get(function(err, platform){
 		.option('','')
 		.option('--logrotateCompress', 'Enable compression for logrotate')
 		.option('','')
+		.option('-fp -foreverPath ','Path for forever cli, if not in path')
+		.option('','')
 		.description(
 			'Install node script (defaults to app.js in current directory) as service via forever\n\n'
 		)
@@ -73,6 +75,12 @@ platforms.get(function(err, platform){
 			if(options.logrotateFrequency) ctx.logrotateFrequency = options.logrotateFrequency;
 			if(options.logrotateMax) ctx.logrotateMax = options.logrotateMax;
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
+			if(options.foreverPath) {
+				var fp = options.foreverPath;
+				fp = fp.trim();
+				if(!fp.match(/\/$/)) fp = fp+'/';
+				ctx.foreverPath = fp;
+			} else ctx.foreverPath='';
 
 			if( !installer.validateScriptName(ctx.script) ){
 				console.error(ctx.script+' not found');
