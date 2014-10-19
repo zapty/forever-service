@@ -94,6 +94,9 @@ forever-service version 0.x.x
                                        
     --logrotateCompress                Enable compression for logrotate
 
+    -p --foreverPath                   Path for forever cli e.g. /usr/local/bin,
+                                       by default forever cli is searched in system Path variable
+
 ```
 
 Delete service
