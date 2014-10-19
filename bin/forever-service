@@ -45,7 +45,7 @@ platforms.get(function(err, platform){
 		.option('','')
 		.option('--logrotateCompress', 'Enable compression for logrotate')
 		.option('','')
-		.option('-fp -foreverPath ','Path for forever cli, if not in path')
+		.option('-fp --foreverPath ','Path for forever cli, if not in path')
 		.option('','')
 		.description(
 			'Install node script (defaults to app.js in current directory) as service via forever\n\n'
