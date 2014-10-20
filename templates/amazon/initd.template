@@ -78,12 +78,18 @@ start() {
 stop() {
 	echo -n "Shutting down {{service}}: "
 
-	if ! [ -f $PIDFILE ]; then
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	if [ -z "$STATUS" ]; then
 		echo "Not running"
 		return 0
 	fi
 
-	PID=$(<$PIDFILE)
+	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
+	PID=$(forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\(test\)\s.*\s.*\s[0-9]*\s\([0-9]*\)\s.*\)/\3/;tx;d;:x')
+	if [ -z "$PID" ]; then
+		echo "Could not get pid"
+		return 0
+	fi
 
 	{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null
 
