@@ -1,0 +1,8 @@
+/var/log/{{service}}.log {
+    {{logroateFrequency|default('daily')}}
+    rotate {{logrotateMax|default('10')}}
+    missingok
+    notifempty
+    copytruncate
+    {{logrotateCompress|default('')}}
+}

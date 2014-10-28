@@ -16,6 +16,7 @@ Platforms supported
 * Amazon Linux
 * Redhat Linux
 * CentOS
+* Ubuntu
 * more to come..
 
 Prerequisite
@@ -148,6 +149,10 @@ $ sudo forever-service delete test
 ```
 This command will stop service if running, clean up all provisioned files and service
 
+
+Known Issue(s)
+--------------
+"restart service" command works like stop in Ubuntu due to bug in upstart https://bugs.launchpad.net/upstart/+bug/703800 
 
 
 Roadmap

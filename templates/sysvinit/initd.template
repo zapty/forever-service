@@ -3,7 +3,8 @@
 #	/etc/rc.d/init.d/{{service}}
 #
 #	{{service}} - Provisioned using forever-service
-#	
+#	CLI {{cli}}
+#	Working Directory {{cwd}}
 #
 # chkconfig: 2345 90 10 
 # description: forever-service startup script for node script based service {{service}}, uses forever to start the service
@@ -68,7 +69,7 @@ start() {
 	--killSignal $KILL_SIGNAL \
 	{{foreverOptions|default('')}} \
 	--uid {{service}} \
-	start {{script|default('app.js')}} 2>&1 >/dev/null &
+	start {{script|default('app.js')}} 2>&1 >/dev/null
 	RETVAL=$?
 
  	[ $RETVAL = 0 ] && touch $LOCKFILE
@@ -85,7 +86,7 @@ stop() {
 	fi
 
 	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
-	PID=$(forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\s.*\s[0-9]*\s\([0-9]*\)\s.*\)/\3/;tx;d;:x')
+	PID=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\s.*\s[0-9]*\s\([0-9]*\)\s.*\)/\3/;tx;d;:x')
 	if [ -z "$PID" ]; then
 		echo "Could not get pid"
 		return 0

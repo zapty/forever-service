@@ -2,9 +2,9 @@ var should = require('should');
 var scriptBuilder = require('../lib/scriptBuilder');
 var fs = require('fs-extra');
 
-describe('Generate initd script', function(){
+describe('Generate sysvinit script', function(){
 
-	describe('Test Amazon Linux scripts', function(){
+	describe('Test sysvinit Linux scripts', function(){
 
 		it('should validated arguments', function(){
 			
@@ -14,24 +14,24 @@ describe('Generate initd script', function(){
 
 			//No callback
 			(function(){
-			  	scriptBuilder.gen({platform: 'amazon'});
+			  	scriptBuilder.gen({platform: 'sysvinit'});
 			}).should.throw();
 
 			//Invalid callback
 			(function(){
-			  	scriptBuilder.gen({platform: 'amazon'}, 0);
+			  	scriptBuilder.gen({platform: 'sysvinit'}, 0);
 			}).should.throw();
 
 			//All valid
 			(function(){
-			  	scriptBuilder.gen({platform: 'amazon'}, function(){});
+			  	scriptBuilder.gen({platform: 'sysvinit'}, function(){});
 			}).should.not.throw();
 		});
 
-		it('should generate script for amazon linux', function(done){
+		it('should generate script for sysvinit linux', function(done){
 			scriptBuilder.gen(
 				{
-					platform: "amazon",
+					platform: "sysvinit",
 					nodescript: "app.js",
 					service: "test",
 					displayname:"Test service"

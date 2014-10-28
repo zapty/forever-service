@@ -1,0 +1,82 @@
+#!upstart
+#	/etc/init/{{service}}.conf
+#
+#	{{service}} - Provisioned using forever-service
+#
+#	CLI {{cli}}
+#	Working Directory {{cwd}}
+#
+
+description "forever-service startup script for node script based service {{service}}, uses forever to start the service" 
+
+start on (local-filesystems and net-device-up IFACE=eth0)
+stop on shutdown
+
+expect fork
+
+
+# Check if any of $pid (could be plural) are running
+env LOGFILE="/var/log/{{service}}.log"
+
+# introduce some gaps between restarts and throttle continous restarts
+env MIN_UPTIME="{{minUptime|default('5000')}}"
+env SPIN_SLEEP_TIME="{{spinSleepTime|default('2000')}}"
+
+# kill signal: Since default needs to be SIGTERM, it is important that services gracefully shutdown,
+# specially if they are doing transactions or other work which should not be interuppted in between
+# for exceptional situation where you dont care about abrupt shutdown, SIGKILL should be used
+env KILL_SIGNAL="{{killSignal|default('SIGTERM')}}"
+
+# Wait time afer with SIGKILL will be sent to the process, in case SIGTERM is not fully finished
+# This is required since when we use SIGTERM, some times if there is problem in code, it might take lot of time for process to exit
+# or process may never exit, in such siutation we have to forcebly kill it so that shutdown or service restart can be done appropriately
+# this wait time is in millisecond
+env KILLWAITTIME={{forceKillWaitTime|default('5000')}}
+
+
+chdir {{cwd}}
+
+exec {{foreverPath}}forever -a -l $LOGFILE --minUptime $MIN_UPTIME --spinSleepTime $SPIN_SLEEP_TIME --killSignal $KILL_SIGNAL {{foreverOptions|default('')}} --uid {{service}} start {{script|default('app.js')}} 
+
+post-start script
+	echo "{{service}} started"
+end script
+
+
+pre-stop script
+
+	echo "Shutting down {{service}}: "
+
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	if [ -z "$STATUS" ]; then
+		echo "Not running"
+		return 0
+	fi
+
+	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
+	PID=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\s.*\s[0-9]*\s\([0-9]*\)\s.*\)/\3/;tx;d;:x')
+	if [ -z "$PID" ]; then
+		echo "Could not get pid"
+		return 0
+	fi
+
+	{{foreverPath}}forever stop {{service}}
+
+	CURRENTWAITTIME=$KILLWAITTIME
+	# wait for some time before forcefully killing the process
+	while [ $CURRENTWAITTIME -gt 0 ]; do
+		#check if the process is still running
+		if [ ! -d "/proc/$PID" ]; then
+			echo "{{service}} shutdown"
+			# if not running we can break, since no more wait is needed, service is stopped
+			break
+		fi
+	 	sleep 1
+	 	CURRENTWAITTIME=$(( $CURRENTWAITTIME - 1000))
+	done
+	if [ -d "/proc/$PID" ]; then
+		kill $PID
+		echo "{{service}} Forced shutdown"
+	fi
+
+end script

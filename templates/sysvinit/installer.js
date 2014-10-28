@@ -11,7 +11,7 @@ exports.initialize=function(){
 		if( contents && contents.match(/(Amazon Linux)|(Red Hat)|(CentOS)/g) ){
 			return {
 				os: contents,
-				platform: 'amazon',
+				platform: 'sysvinit',
 				help: 'Command to interact with service, sudo service [service] start|stop|restart|status'
 			};
 		}
@@ -21,7 +21,7 @@ exports.initialize=function(){
 
 exports.install=function(ctx, scripts, callback){
 	//Install the init.d file..
-	if(ctx.platform === 'amazon'){
+	if(ctx.platform === 'sysvinit'){
 		var serviceFile = '/etc/init.d/'+ctx.service;
 		var logrotateFile = '/etc/logrotate.d/'+ctx.service;
 
@@ -80,14 +80,15 @@ exports.startService=function(ctx, callback){
 
 function stopService(ctx, callback){
 	shell.exec('sudo service '+ctx.service+' stop', {async: true}, function(code, output){
-		callback(code != 0); //error if non 0 exit code
+		//callback(code != 0); //error if non 0 exit code
+		callback(); //even if there is error in stopping service we will continue with uninstallation..
 	});
 }
 
 exports.stopService = stopService;
 
 exports.delete=function(ctx, scripts, callback){
-	if(ctx.platform === 'amazon'){
+	if(ctx.platform === 'sysvinit'){
 		var serviceFile = '/etc/init.d/'+ctx.service;
 		var logrotateFile = '/etc/logrotate.d/'+ctx.service;
 
