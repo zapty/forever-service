@@ -86,7 +86,7 @@ stop() {
 	fi
 
 	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
-	PID=$({{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)/p' | awk '{print $7}')
+	PID=$({{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)\s/p' | awk '{print $7}')
 
 	if [ -z "$PID" ]; then
 		echo "Could not get pid"
