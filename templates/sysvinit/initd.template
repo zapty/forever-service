@@ -49,7 +49,7 @@ checkpidexists() {
 
 
 start() {
-	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
 	if ! [ -z "$STATUS" ]; then
 		echo "Service {{service}} already running"
 		return 0
@@ -79,14 +79,15 @@ start() {
 stop() {
 	echo -n "Shutting down {{service}}: "
 
-	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
 	if [ -z "$STATUS" ]; then
 		echo "Not running"
 		return 0
 	fi
 
 	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
-	PID=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\s.*\s[0-9]*\s\([0-9]*\)\s.*\)/\3/;tx;d;:x')
+	PID=$({{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)/p' | awk '{print $7}')
+
 	if [ -z "$PID" ]; then
 		echo "Could not get pid"
 		return 0
@@ -120,7 +121,7 @@ stop() {
 }
 
 status() {
-	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\).*\)/\2-status:\1/;tx;d;:x')
+	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
 	if [ -z "$STATUS" ]; then
 		echo "{{service}} is not running"
 		RETVAL=3
