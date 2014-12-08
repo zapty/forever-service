@@ -9,6 +9,12 @@
 
 description "forever-service startup script for node script based service {{service}}, uses forever to start the service" 
 
+{% if applyUlimits %}
+limit nofile 20000 20000
+{% endif %}
+
+env FOREVER_ROOT={{foreverRoot}}
+
 start on (local-filesystems and net-device-up IFACE=eth0)
 stop on shutdown
 
@@ -32,7 +38,6 @@ env KILL_SIGNAL="{{killSignal|default('SIGTERM')}}"
 # or process may never exit, in such siutation we have to forcebly kill it so that shutdown or service restart can be done appropriately
 # this wait time is in millisecond
 env KILLWAITTIME={{forceKillWaitTime|default('5000')}}
-
 
 chdir {{cwd}}
 
@@ -60,7 +65,17 @@ pre-stop script
 		return 0
 	fi
 
-	{{foreverPath}}forever stop {{service}}
+	{{foreverPath}}forever stop {{service}} &
+
+	killtree() {
+	    local _pid=$1
+	    local _sig=${2:--TERM}
+	    kill -stop ${_pid} # needed to stop quickly forking parent from producing children between child killing and parent killing
+	    for _child in $(ps -o pid --no-headers --ppid ${_pid}); do
+	        killtree ${_child} ${_sig}
+	    done
+	    kill -${_sig} ${_pid}
+	}
 
 	CURRENTWAITTIME=$KILLWAITTIME
 	# wait for some time before forcefully killing the process
@@ -75,7 +90,7 @@ pre-stop script
 	 	CURRENTWAITTIME=$(( $CURRENTWAITTIME - 1000))
 	done
 	if [ -d "/proc/$PID" ]; then
-		kill $PID
+		killtree $PID 9
 		echo "{{service}} Forced shutdown"
 	fi
 

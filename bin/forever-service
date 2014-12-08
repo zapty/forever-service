@@ -48,6 +48,8 @@ platforms.get(function(err, platform){
 		.option('-p --foreverPath [value]','Path for forever cli e.g. /usr/local/bin,')
 		.option('','by default forever cli is searched in system Path variable')
 		.option('','')
+		.option('-u --applyUlimits','Apply increased ulimits in supported environment')
+		.option('','')		
 		.description(
 			'Install node script (defaults to app.js in current directory) as service via forever\n\n'
 		)
@@ -76,6 +78,7 @@ platforms.get(function(err, platform){
 			if(options.logrotateFrequency) ctx.logrotateFrequency = options.logrotateFrequency;
 			if(options.logrotateMax) ctx.logrotateMax = options.logrotateMax;
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
+			if(options.applyUlimits) ctx.applyUlimits = true;
 			if(options.foreverPath) {
 				var fp = options.foreverPath;
 				fp = fp.trim();

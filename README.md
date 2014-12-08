@@ -17,6 +17,8 @@ Platforms supported
 * Redhat Linux
 * CentOS
 * Ubuntu
+* Debian
+* Raspbian
 * more to come..
 
 Prerequisite
@@ -97,6 +99,8 @@ forever-service version 0.x.x
 
     -p --foreverPath                   Path for forever cli e.g. /usr/local/bin,
                                        by default forever cli is searched in system Path variable
+
+    -u --applyUlimits                  Apply increased ulimits in supported environment
 
 ```
 

@@ -1,21 +1,36 @@
 #!/bin/bash
+{% if osflavor=='centos' %}
 #
 #	/etc/rc.d/init.d/{{service}}
 #
 #	{{service}} - Provisioned using forever-service
-#	CLI {{cli}}
-#	Working Directory {{cwd}}
 #
 # chkconfig: 2345 90 10 
 # description: forever-service startup script for node script based service {{service}}, uses forever to start the service
 # 
+{% else %}
+### BEGIN INIT INFO
+# Provides: {{service}}
+# Required-Start:    $network $remote_fs $local_fs
+# Required-Stop:     $network $remote_fs $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: forever-service startup script for {{service}}
+# Description: forever-service startup script for node script based service {{service}}, uses forever to start the service
+### END INIT INFO
+{% endif %}
 
+#	CLI {{cli}}
+#	Working Directory {{cwd}}
 
 # Check if any of $pid (could be plural) are running
 PIDFILE="/var/run/{{service}}.pid"
 LOGFILE="/var/log/{{service}}.log"
+{% if osflavor === 'centos' %}
 LOCKFILE="/var/lock/subsys/{{service}}"
-
+{% else %}
+LOCKFILE="/var/lock/{{service}}"
+{% endif %}
 # introduce some gaps between restarts and throttle continous restarts
 MIN_UPTIME="{{minUptime|default('5000')}}"
 SPIN_SLEEP_TIME="{{spinSleepTime|default('2000')}}"
@@ -49,6 +64,10 @@ checkpidexists() {
 
 
 start() {
+	#this is to ensure forever is able to find out the correct root every time
+	export FOREVER_ROOT={{foreverRoot}}
+
+
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
 	if ! [ -z "$STATUS" ]; then
 		echo "Service {{service}} already running"
@@ -59,6 +78,16 @@ start() {
 
 	# move to the directory from where the inital forever script was launched so that even if it is relative it works as expected
 	cd {{cwd}}
+
+	{% if applyUlimits %}
+	ulimit -f unlimited
+	ulimit -t unlimited
+	ulimit -v unlimited
+	ulimit -n 64000
+	ulimit -m unlimited
+	ulimit -u 32000
+	{% endif %}
+
 
 	{{foreverPath}}forever \
 	--pidFile $PIDFILE \
@@ -77,6 +106,9 @@ start() {
 }	
 
 stop() {
+	#this is to ensure forever is able to find out the correct root every time
+	export FOREVER_ROOT={{foreverRoot}}
+
 	echo -n "Shutting down {{service}}: "
 
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
@@ -93,7 +125,10 @@ stop() {
 		return 0
 	fi
 
-	{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null
+	#run in background, since recent changes in forever, now blocks stop call with SIGTERM is finished
+	#but we want to wait till some time and forcibly kill after elapsed time
+	#without background script, we could be waiting forever
+	{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null &
 
 	CURRENTWAITTIME=$KILLWAITTIME
 	# wait for some time before forcefully killing the process
@@ -105,8 +140,13 @@ stop() {
 			echo "Successful"
 			break
 		fi
+		{% if osflavor === 'centos' %}
 	 	usleep 500000
 	 	let CURRENTWAITTIME-=500
+	 	{% else %}
+	 	sleep 1
+	 	CURRENTWAITTIME=$(( $CURRENTWAITTIME - 1000))
+	 	{% endif %}
 	done
 	checkpidexists $PID
 	if [  $? -eq 0  ]; then
@@ -121,6 +161,9 @@ stop() {
 }
 
 status() {
+	#this is to ensure forever is able to find out the correct root every time
+	export FOREVER_ROOT={{foreverRoot}}
+
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
 	if [ -z "$STATUS" ]; then
 		echo "{{service}} is not running"

@@ -12,6 +12,20 @@ exports.initialize=function(){
 			return {
 				os: contents,
 				platform: 'sysvinit',
+				scmd: 'chkconfig',
+				osflavor: 'centos',
+				help: 'Command to interact with service, sudo service [service] start|stop|restart|status'
+			};
+		}
+	} else if (fs.existsSync('/etc/os-release')){
+		var contents = fs.readFileSync('/etc/os-release','utf8');
+		if( contents && contents.match(/ID=(debian|raspbian)/g) ){
+			return {
+				os: getPrettyName(contents),
+				platform: 'sysvinit',
+				scmd: 'update-rc.d',
+				usleepSupported: false,
+				osflavor: 'debian',
 				help: 'Command to interact with service, sudo service [service] start|stop|restart|status'
 			};
 		}
@@ -46,7 +60,10 @@ exports.install=function(ctx, scripts, callback){
 					});
 				},
 				function(callback){
-					shell.exec('chkconfig --add '+ctx.service, {async: true}, function(code, output){
+					var pcmd = 'chkconfig --add '+ctx.service;
+					if(ctx.scmd ==='update-rc.d')
+						pcmd = '/usr/sbin/update-rc.d '+ctx.service+' defaults';
+					shell.exec(pcmd, {async: true}, function(code, output){
 						callback(code != 0?'Could not add service '+ctx.service+'\n'+output:null); //error if non 0 exit code
 					});
 				},
@@ -68,6 +85,14 @@ exports.install=function(ctx, scripts, callback){
 				);
 			}
 		);
+	}
+}
+
+function getPrettyName(contents){
+	if(!contents) return;
+	var m = contents.match(/PRETTY_NAME\s*=\s*"(.*)"/);
+	if(m && m.length > 1 && m[1]){
+		return m[1];
 	}
 }
 
@@ -118,12 +143,19 @@ exports.delete=function(ctx, scripts, callback){
 					stopService(ctx, callback);
 				},
 				function(callback){
+					if(ctx.scmd ==='update-rc.d') return callback(null); //For update-rc.d remove will be called after unlink
 					shell.exec('chkconfig --del '+ctx.service, {async: true}, function(code, output){
 						callback(code != 0?'Could not delete service '+ctx.service+'\n'+output:null); //error if non 0 exit code
 					});
 				},
 				function(callback){
 					fs.unlink(serviceFile, callback);
+				},
+				function(callback){
+					if(ctx.scmd !=='update-rc.d') return callback(null); //Following step is Only for update-rc.d to remove service
+					shell.exec('/usr/sbin/update-rc.d -f '+ctx.service+' remove', {async: true}, function(code, output){
+						callback(code != 0?'Could not delete service '+ctx.service+'\n'+output:null); //error if non 0 exit code
+					});
 				},
 				function(callback){
 					fs.exists(logrotateFile, function(exists){
