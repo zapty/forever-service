@@ -7,7 +7,7 @@ platforms.get(function(err, platform){
 	console.log('forever-service version '+require('../package.json').version+'\n');
 	if(err || !platform){		
 		console.error('This platform is not yet supported by forever-service');
-		console.error('To help us add this platform, please contibute to https://github.com/zapty/forever-service');
+		console.error('To help us add this platform, please contibute to https://github.com/zapty/forever-service\n');
 		return;
 	}
 
@@ -143,6 +143,16 @@ platforms.get(function(err, platform){
 		});
 
 
-	program.parse(process.argv);
+
+	var result = program.parse(process.argv);
+	if(!(result.args && result.args.length > 1 && result.args[1] && typeof result.args[1]==='object')){
+		//If command line arguments are invalid display help
+		console.error("Invalid arguments!");
+		program.outputHelp();
+		console.log('  Command help:\n')
+		console.log('    forever-service install --help');
+		console.log('    forever-service delete --help\n');
+	} 
+
 });
 
