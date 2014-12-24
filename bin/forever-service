@@ -21,6 +21,8 @@ platforms.get(function(err, platform){
 		.command('install [service]')
 		.option('-s, --script [script]','Script to run as service e.g. app.js, defaults to app.js')
 		.option('','')
+		.option('-o --scriptOptions [options]','Command line options for the script')
+		.option('','')
 		.option('--minUptime [value]','Minimum uptime (millis) for a script to not be considered "spinning", default 5000')
 		.option('','')
 		.option('--spinSleepTime [value]','Time to wait (millis) between launches of a spinning script., default 2000')
@@ -69,6 +71,8 @@ platforms.get(function(err, platform){
 			else
 				ctx.script = 'app.js';
 
+
+			if(options.scriptOptions) ctx.scriptOptions = options.scriptOptions;
 			if(options.minUptime) ctx.minUptime = options.minUptime;
 			if(options.spinSleepTime) ctx.spinSleepTime = options.spinSleepTime;
 			if(options.noGracefulShutdown) ctx.killSignal = 'SIGKILL'; //Default is SIGTERM so non graceful shutdown makes it SIGKILL

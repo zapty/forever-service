@@ -98,7 +98,7 @@ start() {
 	--killSignal $KILL_SIGNAL \
 	{{foreverOptions|default('')}} \
 	--uid {{service}} \
-	start {{script|default('app.js')}} 2>&1 >/dev/null
+	start {{script|default('app.js')}} {{scriptOptions|default('')}} 2>&1 >/dev/null
 	RETVAL=$?
 
  	[ $RETVAL = 0 ] && touch $LOCKFILE

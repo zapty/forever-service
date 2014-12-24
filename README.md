@@ -72,7 +72,9 @@ forever-service version 0.x.x
 
     -h, --help                         output usage information
     -s, --script [script]              Script to run as service e.g. app.js, defaults to app.js
-                                       
+
+    -o --scriptOptions [options]       Command line options for the script
+
     --minUptime [value]                Minimum uptime (millis) for a script to not be considered "spinning", default 5000
                                        
     --spinSleepTime [value]            Time to wait (millis) between launches of a spinning script., default 2000
@@ -141,7 +143,16 @@ $ sudo forever-service install test --script main.js
 * Custom options for forever 
 
 ```
-$ sudo forever-service install test -f " -watchDirectory /your/watch/directoyr -w"
+$ sudo forever-service install test -f " -watchDirectory /your/watch/directory -w"
+```
+
+
+
+
+* Command line parameters for the script
+
+```
+$ sudo forever-service install test --script main.js -o " param1 param2"
 ```
 
 
@@ -152,6 +163,14 @@ $ sudo forever-service install test -f " -watchDirectory /your/watch/directoyr -
 $ sudo forever-service delete test
 ```
 This command will stop service if running, clean up all provisioned files and service
+
+
+
+
+* Get list of running services (Remember all forever command line options are available since we use forever internally)
+```
+$ sudo forever list
+```
 
 
 Known Issue(s)
