@@ -88,7 +88,7 @@ start() {
 	ulimit -u 32000
 	{% endif %}
 
-  {{envVars|default('')}} \
+	{{envVars|default('')}} \
 	{{foreverPath}}forever \
 	--pidFile $PIDFILE \
 	-a \
