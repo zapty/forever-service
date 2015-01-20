@@ -73,6 +73,9 @@ forever-service version 0.x.x
     -h, --help                         output usage information
     -s, --script [script]              Script to run as service e.g. app.js, defaults to app.js
 
+    -e --envVars [vars]                Environment Variables for the script
+                                       e.g. -e "PORT=80 ENV=prod FOO=bar"
+
     -o --scriptOptions [options]       Command line options for the script
 
     --minUptime [value]                Minimum uptime (millis) for a script to not be considered "spinning", default 5000
