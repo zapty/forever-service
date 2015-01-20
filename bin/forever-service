@@ -21,6 +21,9 @@ platforms.get(function(err, platform){
 		.command('install [service]')
 		.option('-s, --script [script]','Script to run as service e.g. app.js, defaults to app.js')
 		.option('','')
+		.option('-e --envVars [vars]','Environment Variables for the script')
+		.option('','e.g. -e "PORT=80 ENV=prod FOO=bar"')
+		.option('','')
 		.option('-o --scriptOptions [options]','Command line options for the script')
 		.option('','')
 		.option('--minUptime [value]','Minimum uptime (millis) for a script to not be considered "spinning", default 5000')
@@ -72,6 +75,7 @@ platforms.get(function(err, platform){
 				ctx.script = 'app.js';
 
 
+			if(options.envVars) ctx.envVars = options.envVars;
 			if(options.scriptOptions) ctx.scriptOptions = options.scriptOptions;
 			if(options.minUptime) ctx.minUptime = options.minUptime;
 			if(options.spinSleepTime) ctx.spinSleepTime = options.spinSleepTime;
