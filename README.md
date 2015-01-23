@@ -175,6 +175,28 @@ This command will stop service if running, clean up all provisioned files and se
 $ sudo forever list
 ```
 
+Run Non Node Programs as Service
+---------------------------------
+
+forever allows to use -c command line parameter to point to alternate command line for execution, using that one can easily launch non-node apps also as service
+
+
+* Run Java Program as service
+
+```
+$ sudo forever-service install ec2box -s start.jar -f " -c 'java -Xms1024m -Xmx1024m -jar'"
+```
+This command will run start.jar using java command line 
+
+
+
+* Run PHP Program as service
+```
+$ sudo forever-service install ec2box -s info.php -f " -c php"
+```
+This command will run info.php using php command line 
+
+
 
 Known Issue(s)
 --------------
