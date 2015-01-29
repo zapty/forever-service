@@ -175,7 +175,7 @@ This command will stop service if running, clean up all provisioned files and se
 $ sudo forever list
 ```
 
-Run Non nodejs Scripts as Service
+Run non nodejs scripts as service
 ---------------------------------
 
 forever allows to use -c command line parameter to point to alternate command line for execution, using that one can easily launch non-node apps also as service

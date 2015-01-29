@@ -1,5 +1,6 @@
 var should = require('should');
 var scriptBuilder = require('../lib/scriptBuilder');
+var installer  = require('../lib/installer');
 var fs = require('fs-extra');
 
 describe('Generate sysvinit script', function(){
@@ -51,3 +52,47 @@ describe('Generate sysvinit script', function(){
 
 	});
 });
+
+describe("Check Environment Variable splitting", function(){
+
+	it("Should work with single env variable", function(){
+		var e = installer.splitEnvVariables('HOME=/xyz/');
+		e.should.be.an.Array;
+		e.should.have.length(1);
+		e.should.containEql('HOME=/xyz/');
+	});
+
+
+	it("Should split env variables by space", function(){
+		var e = installer.splitEnvVariables('z=10 x=test HOME=/xyz/');
+		e.should.be.an.Array;
+		e.should.have.length(3);
+		e.should.containEql('z=10');
+		e.should.containEql('x=test');
+		e.should.containEql('HOME=/xyz/');
+	});
+
+
+	it("Should split env variables by space but avoid space splitting inside quote", function(){
+		var e = installer.splitEnvVariables('z=10 x="test testing" HOME=/xyz/');
+		e.should.be.an.Array;
+		e.should.have.length(3);
+		e.should.containEql('z=10');
+		e.should.containEql('x="test testing"');
+		e.should.containEql('HOME=/xyz/');
+	});
+
+
+	it("Should split env variables by space but avoid space splitting inside single quote", function(){
+		var e = installer.splitEnvVariables("z=10 x='test testing' HOME=/xyz/");
+		e.should.be.an.Array;
+		e.should.have.length(3);
+		e.should.containEql('z=10');
+		e.should.containEql("x='test testing'");
+		e.should.containEql('HOME=/xyz/');
+	});
+
+
+});
+
+

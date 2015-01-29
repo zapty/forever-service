@@ -41,8 +41,8 @@ env KILLWAITTIME={{forceKillWaitTime|default('5000')}}
 
 chdir {{cwd}}
 
-{%- if envVars|default(false) %}
-{%- for v in envVars.split(" ") %}
+{%- if envVarsArray|default(false) %}
+{%- for v in envVarsArray %}
 env {{ v }}
 {%- endfor %}
 {%- endif %}

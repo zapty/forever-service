@@ -22,4 +22,6 @@ process.once('SIGTERM', function(){
 
 server.listen(8088);
 console.log("Server is listening");
-
+if(process.env.TEST){
+  console.log("Env variable TEST "+process.env.TEST);
+}
