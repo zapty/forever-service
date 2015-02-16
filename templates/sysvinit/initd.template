@@ -23,6 +23,13 @@
 #	CLI {{cli}}
 #	Working Directory {{cwd}}
 
+#Setup Environment variables (if any)
+{%- if envVarsArray|default(false) %}
+{%- for v in envVarsArray %}
+export {{ v }}
+{%- endfor %}
+{%- endif %}
+
 # Check if any of $pid (could be plural) are running
 PIDFILE="/var/run/{{service}}.pid"
 LOGFILE="/var/log/{{service}}.log"
@@ -88,7 +95,6 @@ start() {
 	ulimit -u 32000
 	{% endif %}
 
-	{{envVars|default('')}} \
 	{{foreverPath}}forever \
 	--pidFile $PIDFILE \
 	-a \
