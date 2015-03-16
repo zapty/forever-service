@@ -19,6 +19,7 @@ Platforms supported
 * Ubuntu
 * Debian
 * Raspbian
+* OSMC Linux
 * more to come..
 
 Prerequisite
