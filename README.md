@@ -20,6 +20,7 @@ Platforms supported
 * Debian
 * Raspbian
 * OSMC Linux
+* Fedora 21
 * more to come..
 
 Prerequisite
