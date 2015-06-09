@@ -24,14 +24,13 @@
 #	Working Directory {{cwd}}
 
 #Setup Environment variables (if any)
-{%- if envVarsArray|default(false) %}
-{%- for v in envVarsArray %}
+{% if envVarsArray|default(false) %}
+{% for v in envVarsArray %}
 export {{ v }}
-{%- endfor %}
-{%- endif %}
+{% endfor %}
+{% endif %}
 
 # Check if any of $pid (could be plural) are running
-PIDFILE="/var/run/{{service}}.pid"
 LOGFILE="/var/log/{{service}}.log"
 {% if osflavor === 'centos' %}
 LOCKFILE="/var/lock/subsys/{{service}}"
@@ -73,9 +72,12 @@ checkpidexists() {
 start() {
 	#this is to ensure forever is able to find out the correct root every time
 	export FOREVER_ROOT={{foreverRoot}}
-
-
+    {% if runAsUser %}
+    STATUS=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}
+{{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x'")
+    {% else %}
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
+	{% endif %}
 	if ! [ -z "$STATUS" ]; then
 		echo "Service {{service}} already running"
 		return 0
@@ -83,6 +85,32 @@ start() {
 
 	echo  "Starting {{service}}"
 
+
+
+	{% if runAsUser %}
+	touch $LOGFILE
+	chown {{runAsUser}} $LOGFILE
+
+	{{suprog}} - {{runAsUser}} -c "\
+	export FOREVER_ROOT={{foreverRoot}};\
+{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});\{% endfor %}{% else %}\{% endif %}
+	cd {{cwd}};\{% if applyUlimits %}
+	ulimit -f unlimited;\
+    ulimit -t unlimited;\
+    ulimit -v unlimited;\
+    ulimit -n 64000;\
+    ulimit -m unlimited;\
+    ulimit -u 32000;\{% endif %}
+    {{foreverPath}}forever \
+    	-a \
+    	-l $LOGFILE \
+    	--minUptime $MIN_UPTIME \
+    	--spinSleepTime $SPIN_SLEEP_TIME \
+    	--killSignal $KILL_SIGNAL \
+    	{{foreverOptions|default('')}} \
+    	--uid {{service}} \
+    	start {{script|default('app.js')}} {{scriptOptions|default('')}}" 2>&1 >/dev/null
+	{% else %}
 	# move to the directory from where the inital forever script was launched so that even if it is relative it works as expected
 	cd {{cwd}}
 
@@ -96,7 +124,6 @@ start() {
 	{% endif %}
 
 	{{foreverPath}}forever \
-	--pidFile $PIDFILE \
 	-a \
 	-l $LOGFILE \
 	--minUptime $MIN_UPTIME \
@@ -105,6 +132,7 @@ start() {
 	{{foreverOptions|default('')}} \
 	--uid {{service}} \
 	start {{script|default('app.js')}} {{scriptOptions|default('')}} 2>&1 >/dev/null
+	{% endif %}
 	RETVAL=$?
 
  	[ $RETVAL = 0 ] && touch $LOCKFILE
@@ -117,14 +145,22 @@ stop() {
 
 	echo -n "Shutting down {{service}}: "
 
+    {% if runAsUser %}
+    STATUS=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}{{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x'")
+    {% else %}
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
+	{% endif %}
 	if [ -z "$STATUS" ]; then
 		echo "Not running"
 		return 0
 	fi
 
 	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
+    {% if runAsUser %}
+    PID=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}{{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)\s/p' | awk '{print $7}'")
+    {% else %}
 	PID=$({{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)\s/p' | awk '{print $7}')
+	{% endif %}
 
 	if [ -z "$PID" ]; then
 		echo "Could not get pid"
@@ -134,7 +170,11 @@ stop() {
 	#run in background, since recent changes in forever, now blocks stop call with SIGTERM is finished
 	#but we want to wait till some time and forcibly kill after elapsed time
 	#without background script, we could be waiting forever
+	{% if runAsUser %}
+	{{suprog}} - {{runAsUser}} -c "{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null &"
+	{% else %}
 	{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null &
+	{% endif %}
 
 	CURRENTWAITTIME=$KILLWAITTIME
 	# wait for some time before forcefully killing the process
@@ -170,7 +210,11 @@ status() {
 	#this is to ensure forever is able to find out the correct root every time
 	export FOREVER_ROOT={{foreverRoot}}
 
+    {% if runAsUser %}
+    STATUS=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}{{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x'")
+    {% else %}
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
+	{% endif %}
 	if [ -z "$STATUS" ]; then
 		echo "{{service}} is not running"
 		RETVAL=3

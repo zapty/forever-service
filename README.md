@@ -109,6 +109,7 @@ forever-service version 0.x.x
 
     -u --applyUlimits                  Apply increased ulimits in supported environment
 
+    -r --runAsUser [user]              *Experimental* Run service as a specific user, defaults to root (No ubuntu support yet)
 ```
 
 Delete service
@@ -148,7 +149,7 @@ $ sudo forever-service install test --script main.js
 * Custom options for forever 
 
 ```
-$ sudo forever-service install test -f " -watchDirectory /your/watch/directory -w"
+$ sudo forever-service install test -f " --watchDirectory /your/watch/directory -w"
 ```
 
 

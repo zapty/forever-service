@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+var path = require('path');
+
+console.log((process.env.FOREVER_ROOT || path.join(process.env.HOME || process.env.USERPROFILE || '/root', '.forever')));

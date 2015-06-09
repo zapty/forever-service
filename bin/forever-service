@@ -1,7 +1,9 @@
 #!/usr/bin/env node
+"use strict";
 
 var installer = require('../lib/installer');
 var platforms = require('../lib/platforms');
+var path = require('path');
 
 platforms.get(function(err, platform){
 	console.log('forever-service version '+require('../package.json').version+'\n');
@@ -34,6 +36,7 @@ platforms.get(function(err, platform){
 		.option('--logrotateCompress', 'Enable compression for logrotate\n')
 		.option('-p --foreverPath [value]','Path for forever cli e.g. /usr/local/bin,\n                                   by default forever cli is searched in system Path variable\n')
 		.option('-u --applyUlimits','Apply increased ulimits in supported environment\n')
+		.option('-r --runAsUser [user]','*Experimental* Run service as a specific user, defaults to root (No ubuntu support yet)\n')
 		.description(
 			'Install node script (defaults to app.js in current directory) as service via forever\n\n'
 		)
@@ -58,6 +61,16 @@ platforms.get(function(err, platform){
 			if(ctx.envVars){
 				//Split at space, but ignore space inside quotes..
 				ctx.envVarsArray = ctx.envVars.match(/(?:[^\s"']+|["'][^"']*["'])+/g);
+				ctx.envVarsNameValueArray=[];
+				for(var evi in ctx.envVarsArray){
+					var ev = ctx.envVarsArray[evi];
+					var evp = ev.split("=");
+					if(evp.length != 2){
+						console.log("Invalid env variable "+ev);
+						process.exit(1);
+					}
+					ctx.envVarsNameValueArray.push(evp);
+				}
 			}
 			if(options.scriptOptions) ctx.scriptOptions = options.scriptOptions;
 			if(options.minUptime) ctx.minUptime = options.minUptime;
@@ -70,12 +83,33 @@ platforms.get(function(err, platform){
 			if(options.logrotateMax) ctx.logrotateMax = options.logrotateMax;
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
 			if(options.applyUlimits) ctx.applyUlimits = true;
+            ctx.foreverPath=path.dirname(getCmdPath('forever'));
+
 			if(options.foreverPath) {
 				var fp = options.foreverPath;
 				fp = fp.trim();
 				if(!fp.match(/\/$/)) fp = fp+'/';
 				ctx.foreverPath = fp;
-			} else ctx.foreverPath='';
+			} else {
+                if(!ctx.foreverPath){
+                    console.error("forever not found, forever must be installed using 'npm install -g forever'");
+                    process.exit(1);
+                } else {
+                    ctx.foreverPath+="/";
+                }
+            }
+
+			if(options.runAsUser){
+				ctx.runAsUser = options.runAsUser;
+			} else ctx.runAsUser = null;
+
+			if(getCmdPath('runuser')){
+				ctx.suprog="runuser";
+			} else ctx.suprog="su";
+
+
+
+			ctx.foreverRoot = getForeverRoot(ctx.runAsUser);
 
 			if( !installer.validateScriptName(ctx.script) ){
 				console.error(ctx.script+' not found');
@@ -147,3 +181,38 @@ platforms.get(function(err, platform){
 
 });
 
+
+function getForeverRoot(user){
+	if(process.getuid() != 0 ){
+		console.log("forever-service must be run as root");
+		process.exit(1);
+	}
+
+	var r;
+	if(user){
+		r = shell.exec('su - '+user+' -c '+__dirname+'"/get-forever-config"',{silent:true});
+	}
+	else
+	{
+		return process.env.FOREVER_ROOT || path.join(process.env.HOME || process.env.USERPROFILE || '/root', '.forever');
+		//r= shell.exec(__dirname+'"/get-forever-config"',{silent:true});
+	}
+	if(r.code != 0){
+		console.log("Unable to get forever root ["+r.code+"]");
+		console.error(r.output);
+		process.exit(1);
+	} else return r.output.trim();
+}
+
+
+function getCmdPath(cmd){
+	var r=shell.exec('whereis '+cmd, {silent: true});
+	var re = new RegExp(cmd+":","g");
+	if(r.output) {
+		var p = r.output.replace(re, "").trim();
+		//console.log(cmd + 'path is ' + p);
+		return p;
+	} else {
+		console.log(cmd + 'path not found');
+	}
+}
