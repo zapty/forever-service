@@ -93,7 +93,7 @@ start() {
 
 	{{suprog}} - {{runAsUser}} -c "\
 	export FOREVER_ROOT={{foreverRoot}};\
-{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});\{% endfor %}{% else %}\{% endif %}
+	{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});\{% endfor %}{% else %}\{% endif %}
 	cd {{cwd}};\{% if applyUlimits %}
 	ulimit -f unlimited;\
     ulimit -t unlimited;\
@@ -171,7 +171,7 @@ stop() {
 	#but we want to wait till some time and forcibly kill after elapsed time
 	#without background script, we could be waiting forever
 	{% if runAsUser %}
-	{{suprog}} - {{runAsUser}} -c "{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null &"
+	{{suprog}} - {{runAsUser}} -c "{{foreverPath}}forever stop {{service}}" 2>&1 >/dev/null &
 	{% else %}
 	{{foreverPath}}forever stop {{service}} 2>&1 >/dev/null &
 	{% endif %}
