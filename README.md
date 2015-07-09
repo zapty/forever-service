@@ -16,7 +16,7 @@ Platforms supported
 * Amazon Linux
 * Redhat Linux
 * CentOS
-* Ubuntu
+* Ubuntu (< 15.04)
 * Debian
 * Raspbian
 * OSMC Linux
