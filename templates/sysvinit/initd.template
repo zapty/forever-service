@@ -73,8 +73,7 @@ start() {
 	#this is to ensure forever is able to find out the correct root every time
 	export FOREVER_ROOT={{foreverRoot}}
     {% if runAsUser %}
-    STATUS=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}
-{{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x'")
+    STATUS=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}{{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x'")
     {% else %}
 	STATUS=$({{foreverPath}}forever --plain list | sed 's/data:\(\s*\[[0-9]*\]\s*\({{service}}\)\s.*\)/\2-status:\1/;tx;d;:x')
 	{% endif %}
@@ -157,7 +156,7 @@ stop() {
 
 	# PID=$(<$PIDFILE) - Changed to detection based on actual PID from forever, sicne due to watchDirectory pid could dynamically change
     {% if runAsUser %}
-    PID=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}{{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)\s/p' | awk '{print $7}'")
+    PID=$({{suprog}} - {{runAsUser}} -c "export FOREVER_ROOT={{foreverRoot}};{% if envVarsNameValueArray|default(false) %}{% for v in envVarsNameValueArray %}export {{ v[0] }}=$(printf "%q" {{v[1]}});{% endfor %}{% endif %}{{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)\s/p' | awk '{print \$7}'")
     {% else %}
 	PID=$({{foreverPath}}forever --plain list | sed -n -e '/data:\s*\[[0-9]*\]\s\({{service}}\)\s/p' | awk '{print $7}')
 	{% endif %}
