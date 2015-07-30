@@ -21,6 +21,7 @@ Platforms supported
 * Raspbian
 * OSMC Linux
 * Fedora 21
+* Oracle Linux
 * more to come..
 
 Prerequisite
