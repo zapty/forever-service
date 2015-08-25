@@ -207,11 +207,9 @@ function getForeverRoot(user){
 
 function getCmdPath(cmd){
 	var r=shell.exec('whereis '+cmd, {silent: true});
-	var re = new RegExp(cmd+":","g");
-	if(r.output) {
-		var p = r.output.replace(re, "").trim();
-		//console.log(cmd + 'path is ' + p);
-		return p;
+	var rs = r.output && r.output.split(" ");
+	if(rs && rs.length && rs.length > 1) {
+		return rs[1];
 	} else {
 		console.log(cmd + 'path not found');
 	}
