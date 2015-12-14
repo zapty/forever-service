@@ -62,7 +62,7 @@ exports.install=function(ctx, scripts, callback){
 				function(callback){
 					var pcmd = 'chkconfig --add '+ctx.service;
 					if(ctx.scmd ==='update-rc.d')
-						pcmd = '/usr/sbin/update-rc.d '+ctx.service+' defaults';
+						pcmd = '/usr/sbin/update-rc.d '+ctx.service+' defaults ' + ctx.killStartPrefix;
 					shell.exec(pcmd, {async: true}, function(code, output){
 						callback(code != 0?'Could not add service '+ctx.service+'\n'+output:null); //error if non 0 exit code
 					});

@@ -104,6 +104,7 @@ forever-service version 0.x.x
     --logrotateMax [value]             Maximum logrotated files to retain, default 10 (logrotate parameter)
                                        
     --logrotateCompress                Enable compression for logrotate
+	--killStartPrefix                  Force prefix to update-rc.d run levels
 
     -p --foreverPath                   Path for forever cli e.g. /usr/local/bin,
                                        by default forever cli is searched in system Path variable
