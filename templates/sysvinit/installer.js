@@ -19,7 +19,7 @@ exports.initialize=function(){
 		}
 	} else if (fs.existsSync('/etc/os-release')){
 		var contents = fs.readFileSync('/etc/os-release','utf8');
-		if( contents && contents.match(/ID=(debian|raspbian|osmc)/g) ){
+		if( contents && contents.match(/ID=(debian|raspbian|osmc|"elementary OS")/g) ){
 			return {
 				os: getPrettyName(contents),
 				platform: 'sysvinit',
