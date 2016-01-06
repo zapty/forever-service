@@ -22,6 +22,7 @@ Platforms supported
 * OSMC Linux
 * Fedora 21
 * Oracle Linux
+* Elementary OS
 * more to come..
 
 Prerequisite
