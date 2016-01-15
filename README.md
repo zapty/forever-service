@@ -97,7 +97,7 @@ forever-service version 0.x.x
                                        
     --start                            Start service after provisioning
                                        
-    --nologroate                       Do not generate logrotate script
+    --nologrotate                      Do not generate logrotate script
                                        
     --logrotateFrequency [frequency]   Frequency of logrotation
                                        valid values are daily, weekly, monthly, "size 100k" etc, default daily

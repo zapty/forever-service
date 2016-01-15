@@ -55,7 +55,7 @@ exports.install=function(ctx, scripts, callback){
 					});
 				},
 				function(callback){
-					if(ctx.nologroate) return callback(null);
+					if(ctx.nologrotate) return callback(null);
 					fs.writeFile(logrotateFile, scripts['logrotate'], callback);
 				}
 			],

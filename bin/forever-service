@@ -30,7 +30,7 @@ platforms.get(function(err, platform){
 		.option('-t --forceKillWaitTime [waittime]','Time to wait in milliseconds before force killing; after failed graceful stop\n                                   defaults to 5000 ms, after which entire process tree is forcibly terminated\n')
 		.option('-f --foreverOptions " [options]"','Extra command line options for forever\n                                   e.g. -f " --watchDirectory /your/watch/directory -w -c /custom/cli" etc..\n                                   NOTE: a mandatory space is required after double quotes, if begining with -\n')
 		.option('--start','Start service after provisioning\n')
-		.option('--nologroate','Do not generate logrotate script\n')
+		.option('--nologrotate','Do not generate logrotate script\n')
 		.option('--logrotateFrequency [frequency]','Frequency of logrotation\n                                   valid values are daily, weekly, monthly, "size 100k" etc, default daily\n')
 		.option('--logrotateMax [value]','Maximum logrotated files to retain, default 10 (logrotate parameter)\n')
 		.option('--logrotateCompress', 'Enable compression for logrotate\n')
@@ -78,7 +78,7 @@ platforms.get(function(err, platform){
 			if(options.noGracefulShutdown) ctx.killSignal = 'SIGKILL'; //Default is SIGTERM so non graceful shutdown makes it SIGKILL
 			if(options.forceKillWaitTime) ctx.forceKillWaitTime = options.forceKillWaitTime;
 			if(options.foreverOptions) ctx.foreverOptions = options.foreverOptions;
-			if(options.nologroate) ctx.nologroate = true;
+			if(options.nologrotate) ctx.nologrotate = true;
 			if(options.logrotateFrequency) ctx.logrotateFrequency = options.logrotateFrequency;
 			if(options.logrotateMax) ctx.logrotateMax = options.logrotateMax;
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';

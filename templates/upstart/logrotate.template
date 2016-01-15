@@ -1,5 +1,5 @@
 /var/log/{{service}}.log {
-    {{logroateFrequency|default('daily')}}
+    {{logrotateFrequency|default('daily')}}
     rotate {{logrotateMax|default('10')}}
     missingok
     notifempty
