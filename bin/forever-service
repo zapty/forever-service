@@ -33,6 +33,7 @@ platforms.get(function(err, platform){
 		.option('--nologrotate','Do not generate logrotate script\n')
 		.option('--logrotateFrequency [frequency]','Frequency of logrotation\n                                   valid values are daily, weekly, monthly, "size 100k" etc, default daily\n')
 		.option('--logrotateMax [value]','Maximum logrotated files to retain, default 10 (logrotate parameter)\n')
+		.option('--dateExt', 'Archive old versions of log files adding a daily extension like YYYYMMDD instead of simply adding a number\n')
 		.option('--logrotateCompress', 'Enable compression for logrotate\n')
 		.option('-p --foreverPath [value]','Path for forever cli e.g. /usr/local/bin,\n                                   by default forever cli is searched in system Path variable\n')
 		.option('-u --applyUlimits','Apply increased ulimits in supported environment\n')
@@ -81,6 +82,7 @@ platforms.get(function(err, platform){
 			if(options.nologrotate) ctx.nologrotate = true;
 			if(options.logrotateFrequency) ctx.logrotateFrequency = options.logrotateFrequency;
 			if(options.logrotateMax) ctx.logrotateMax = options.logrotateMax;
+			if(options.dateExt) ctx.dateExt = 'dateext';
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
 			if(options.applyUlimits) ctx.applyUlimits = true;
             ctx.foreverPath=path.dirname(getCmdPath('forever'));
