@@ -4,5 +4,6 @@
     missingok
     notifempty
     copytruncate
+    {{logrotateDateExt|default('')}}
     {{logrotateCompress|default('')}}
 }
