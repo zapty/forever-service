@@ -23,6 +23,7 @@ Platforms supported
 * Fedora 21
 * Oracle Linux
 * Elementary OS
+* BunsenLabs
 * more to come..
 
 Prerequisite

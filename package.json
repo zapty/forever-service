@@ -1,6 +1,6 @@
 {
   "name": "forever-service",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "preferGlobal": "true",
   "description": "Provision node script as a service via forever, allowing it to automatically start on boot, working across various Linux distros and OS",
   "main": "lib/api.js",
@@ -39,7 +39,8 @@
     "redhat",
     "debian",
     "raspbian",
-    "ubuntu"
+    "ubuntu",
+    "busenlabs"
   ],
   "bin": {
     "forever-service": "./bin/forever-service",
