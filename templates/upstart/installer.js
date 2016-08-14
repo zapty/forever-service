@@ -3,6 +3,9 @@ var async = require('async'),
 	fs = require('fs');
 
 exports.initialize=function(){
+	if (!fs.existsSync('/sbin/upstart')) {
+		return;
+	}
 
 	if (fs.existsSync('/etc/lsb-release')){
 		var contents = fs.readFileSync('/etc/lsb-release','utf8');
