@@ -1,6 +1,4 @@
-var os = require('os'),
-    scriptBuilder = require('../../lib/scriptBuilder'),
-	async = require('async'),
+var async = require('async'),
 	shell = require('shelljs'),
 	fs = require('fs');
 
@@ -73,16 +71,13 @@ exports.install=function(ctx, scripts, callback){
 				}
 			],
 			function(err, results){
-				//if(err) console.error('Error while provisioing service\n'+err);
-				callback(err, 
-					{
+				callback(err, {
 						help: 'Commands to interact with service '+ctx.service+'\n'+
 							  'Start   - "sudo service '+ctx.service+' start"\n'+
 							  'Stop    - "sudo service '+ctx.service+' stop"\n'+
 							  'Status  - "sudo service '+ctx.service+' status"\n'+
 							  'Restart - "sudo service '+ctx.service+' restart"'
-					}
-				);
+				});
 			}
 		);
 	}
