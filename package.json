@@ -12,6 +12,7 @@
     "walker": "~1.0.6"
   },
   "devDependencies": {
+    "fs-extra": "^0.30.0",
     "mocha": "*",
     "should": "*"
   },
