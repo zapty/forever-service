@@ -17,7 +17,8 @@ exports.initialize=function(){
 		}
 	} else if (fs.existsSync('/etc/os-release')){
 		var contents = fs.readFileSync('/etc/os-release','utf8');
-		if( contents && contents.match(/ID=(debian|bunsenlabs|raspbian|osmc|"elementary OS")/g) ){
+		if (/ID=(debian|bunsenlabs|raspbian|osmc|"elementary OS")/.test(contents) ||
+			(!fs.existsSync('/sbin/upstart') && /ID_LIKE=debian/.test(contents))) { // Matches Ubuntu 15+ with systemd only
 			return {
 				os: getPrettyName(contents),
 				platform: 'sysvinit',
