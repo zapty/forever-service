@@ -85,7 +85,10 @@ platforms.get(function(err, platform){
 			if(options.logrotateDateExt) ctx.logrotateDateExt = 'dateext';
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
 			if(options.applyUlimits) ctx.applyUlimits = true;
-            ctx.foreverPath=path.dirname(getCmdPath('forever'));
+			try {
+				ctx.foreverPath=path.dirname(getCmdPath('forever'));
+			} catch (err) {
+			}
 
 			if(options.foreverPath) {
 				var fp = options.foreverPath;
