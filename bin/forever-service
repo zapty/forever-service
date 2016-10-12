@@ -4,10 +4,11 @@
 var installer = require('../lib/installer');
 var platforms = require('../lib/platforms');
 var path = require('path');
+var shell = require('shelljs');
 
 platforms.get(function(err, platform){
 	console.log('forever-service version '+require('../package.json').version+'\n');
-	if(err || !platform){		
+	if(err || !platform){
 		console.error('This platform is not yet supported by forever-service');
 		console.error('To help us add this platform, please contibute to https://github.com/zapty/forever-service\n');
 		return;
@@ -17,7 +18,7 @@ platforms.get(function(err, platform){
 
 	program
 		.version(require('../package.json').version)
-		
+
 
 	program
 		.command('install [service]')
@@ -52,7 +53,7 @@ platforms.get(function(err, platform){
 			var ctx = Object.create(platform);
 			ctx.service = service;
 
-			if(options.script) 
+			if(options.script)
 				ctx.script = options.script;
 			else
 				ctx.script = 'app.js';
@@ -152,7 +153,7 @@ platforms.get(function(err, platform){
 				console.error('Service name missing');
 				return 3;
 			}
-			
+
 			console.log('Platform - '+platform.os);
 
 			var ctx = Object.create(platform);
@@ -179,7 +180,7 @@ platforms.get(function(err, platform){
 		console.log('  Command help:\n')
 		console.log('    forever-service install --help');
 		console.log('    forever-service delete --help\n');
-	} 
+	}
 
 });
 

@@ -1,17 +1,19 @@
-var os = require('os'),
-    scriptBuilder = require('../../lib/scriptBuilder'),
-	async = require('async'),
+var async = require('async'),
 	shell = require('shelljs'),
 	fs = require('fs');
 
 exports.initialize=function(){
+	if (!fs.existsSync('/sbin/upstart')) {
+		return;
+	}
 
-	if(fs.existsSync('/etc/lsb-release')){
+	if (fs.existsSync('/etc/lsb-release')){
 		var contents = fs.readFileSync('/etc/lsb-release','utf8');
-		var r = /DISTRIB_DESCRIPTION\=['"](.*)['"]/gm;
-		if( contents && contents.match(/(DISTRIB_ID=Ubuntu)/g) ){
-			var osmatch = r.exec(contents);
-			if(osmatch.length < 2) return;
+		if (contents && contents.match(/(DISTRIB_ID=Ubuntu)/g) ){
+			var osmatch = /DISTRIB_DESCRIPTION\=['"](.*)['"]/gm.exec(contents);
+			if (!osmatch || osmatch.length < 2) {
+				return;
+			}
 
 			return {
 				os: osmatch[1],
@@ -61,7 +63,7 @@ exports.install=function(ctx, scripts, callback){
 			],
 			function(err, results){
 				//if(err) console.error('Error while provisioing service\n'+err);
-				callback(err, 
+				callback(err,
 					{
 						help: 'Commands to interact with service '+ctx.service+'\n'+
 							  'Start   - "sudo start '+ctx.service+'"\n'+
