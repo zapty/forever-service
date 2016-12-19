@@ -66,10 +66,12 @@ platforms.get(function(err, platform){
 				ctx.envVarsNameValueArray=[];
 				for(var evi in ctx.envVarsArray){
 					var ev = ctx.envVarsArray[evi];
-					var evp = ev.split("=");
-					if(evp.length != 2){
+					var evp = ev.split(/=(.*)/);
+					if(evp.length != 3){
 						console.log("Invalid env variable "+ev);
 						process.exit(1);
+					} else {
+						evp.pop();
 					}
 					ctx.envVarsNameValueArray.push(evp);
 				}
