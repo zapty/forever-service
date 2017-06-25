@@ -68,8 +68,11 @@ platforms.get(function(err, platform){
 					var ev = ctx.envVarsArray[evi];
 					var evp = ev.split("=");
 					if(evp.length != 2){
-						console.log("Invalid env variable "+ev);
-						process.exit(1);
+						var evp_val = ev.substring(ev.indexOf("=")+1);
+						var temp_evp = [];
+						temp_evp.push(evp[0]);
+						temp_evp.push(evp_val);
+						evp = temp_evp;
 					}
 					ctx.envVarsNameValueArray.push(evp);
 				}
