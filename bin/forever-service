@@ -38,6 +38,7 @@ platforms.get(function(err, platform){
 		.option('--logrotateCompress', 'Enable compression for logrotate\n')
 		.option('-p --foreverPath [value]','Path for forever cli e.g. /usr/local/bin,\n                                   by default forever cli is searched in system Path variable\n')
 		.option('-u --applyUlimits','Apply increased ulimits in supported environment\n')
+		.option('--killStartPrefix','Force prefix to update-rc.d run levels. Default is 20\n')
 		.option('-r --runAsUser [user]','*Experimental* Run service as a specific user, defaults to root (No ubuntu support yet)\n')
 		.description(
 			'Install node script (defaults to app.js in current directory) as service via forever\n\n'
@@ -76,6 +77,7 @@ platforms.get(function(err, platform){
 			if(options.logrotateDateExt) ctx.logrotateDateExt = 'dateext';
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
 			if(options.applyUlimits) ctx.applyUlimits = true;
+			ctx.killStartPrefix = options.killStartPrefix || 20;
             ctx.foreverPath=path.dirname(getCmdPath('forever'));
 
 			if(options.foreverPath) {

@@ -108,6 +108,7 @@ forever-service version 0.x.x
     --logrotateDateExt                 Archive old versions of log files adding a daily extension like YYYYMMDD instead of simply adding a number
 
     --logrotateCompress                Enable compression for logrotate
+	--killStartPrefix                  Force prefix to update-rc.d run levels
 
     -p --foreverPath                   Path for forever cli e.g. /usr/local/bin,
                                        by default forever cli is searched in system Path variable
