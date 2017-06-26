@@ -62,17 +62,7 @@ platforms.get(function(err, platform){
 			if(options.envVars) ctx.envVars = options.envVars;
 			if(ctx.envVars){
 				//Split at space, but ignore space inside quotes..
-				ctx.envVarsArray = ctx.envVars.match(/(?:[^\s"']+|["'][^"']*["'])+/g);
-				ctx.envVarsNameValueArray=[];
-				for(var evi in ctx.envVarsArray){
-					var ev = ctx.envVarsArray[evi];
-					var evp = ev.split("=");
-					if(evp.length != 2){
-						console.log("Invalid env variable "+ev);
-						process.exit(1);
-					}
-					ctx.envVarsNameValueArray.push(evp);
-				}
+				ctx.envVarsNameValueArray = installer.splitEnvVariables(ctx.envVars);
 			}
 			if(options.scriptOptions) ctx.scriptOptions = options.scriptOptions;
 			if(options.minUptime) ctx.minUptime = options.minUptime;

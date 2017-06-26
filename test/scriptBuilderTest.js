@@ -59,7 +59,7 @@ describe("Check Environment Variable splitting", function(){
 		var e = installer.splitEnvVariables('HOME=/xyz/');
 		e.should.be.an.Array;
 		e.should.have.length(1);
-		e.should.containEql('HOME=/xyz/');
+		e.should.containEql(['HOME','/xyz/']);
 	});
 
 
@@ -67,9 +67,9 @@ describe("Check Environment Variable splitting", function(){
 		var e = installer.splitEnvVariables('z=10 x=test HOME=/xyz/');
 		e.should.be.an.Array;
 		e.should.have.length(3);
-		e.should.containEql('z=10');
-		e.should.containEql('x=test');
-		e.should.containEql('HOME=/xyz/');
+		e.should.containEql(['z','10']);
+		e.should.containEql(['x','test']);
+		e.should.containEql(['z','10']);
 	});
 
 
@@ -77,9 +77,10 @@ describe("Check Environment Variable splitting", function(){
 		var e = installer.splitEnvVariables('z=10 x="test testing" HOME=/xyz/');
 		e.should.be.an.Array;
 		e.should.have.length(3);
-		e.should.containEql('z=10');
-		e.should.containEql('x="test testing"');
-		e.should.containEql('HOME=/xyz/');
+
+		e.should.containEql(['z','10']);
+		e.should.containEql(['x','"test testing"']);
+		e.should.containEql(['z','10']);
 	});
 
 
@@ -87,11 +88,45 @@ describe("Check Environment Variable splitting", function(){
 		var e = installer.splitEnvVariables("z=10 x='test testing' HOME=/xyz/");
 		e.should.be.an.Array;
 		e.should.have.length(3);
-		e.should.containEql('z=10');
-		e.should.containEql("x='test testing'");
-		e.should.containEql('HOME=/xyz/');
+		e.should.containEql(['z','10']);
+		e.should.containEql(['x',"'test testing'"]);
+		e.should.containEql(['HOME','/xyz/']);
 	});
 
+
+	it("Should split env variables by space but avoid space splitting inside quote, and ignore = inside quote", function(){
+		var e = installer.splitEnvVariables('z=10 x="test testing" HOME=/xyz/ MONGO_URI="mongodb://user:password@host1:15145,host2:15145/db-name?ssl=true" ');
+		e.should.be.an.Array;
+		e.should.have.length(4);
+		e.should.containEql(['z','10']);
+		e.should.containEql(['x','"test testing"']);
+		e.should.containEql(['HOME','/xyz/']);
+		e.should.containEql(['MONGO_URI','"mongodb://user:password@host1:15145,host2:15145/db-name?ssl=true"']);
+	});
+
+
+	it("Should split empty value env variables also", function(){
+		var e = installer.splitEnvVariables('z=10 x="test testing" Q= HOME=/xyz/ MONGO_URI="mongodb://user:password@host1:15145,host2:15145/db-name?ssl=true" ');
+		e.should.be.an.Array;
+		e.should.have.length(5);
+		e.should.containEql(['z','10']);
+		e.should.containEql(['x','"test testing"']);
+		e.should.containEql(['Q','']);
+		e.should.containEql(['HOME','/xyz/']);
+		e.should.containEql(['MONGO_URI','"mongodb://user:password@host1:15145,host2:15145/db-name?ssl=true"']);
+	});
+
+	it("Should split empty value env variables also at end", function(){
+		var e = installer.splitEnvVariables('z=10 x="test testing" Q= HOME=/xyz/ MONGO_URI="mongodb://user:password@host1:15145,host2:15145/db-name?ssl=true" QQ=');
+		e.should.be.an.Array;
+		e.should.have.length(6);
+		e.should.containEql(['z','10']);
+		e.should.containEql(['x','"test testing"']);
+		e.should.containEql(['Q','']);
+		e.should.containEql(['HOME','/xyz/']);
+		e.should.containEql(['MONGO_URI','"mongodb://user:password@host1:15145,host2:15145/db-name?ssl=true"']);
+		e.should.containEql(['QQ','']);
+	});
 
 });
 
