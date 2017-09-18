@@ -1,6 +1,6 @@
 {
   "name": "forever-service",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "preferGlobal": "true",
   "description": "Provision node script as a service via forever, allowing it to automatically start on boot, working across various Linux distros and OS",
   "main": "lib/api.js",

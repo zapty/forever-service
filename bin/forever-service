@@ -83,14 +83,14 @@ platforms.get(function(err, platform){
 				if(!fp.match(/\/$/)) fp = fp+'/';
 				ctx.foreverPath = fp;
 			} else {
-        var foreverCmd = getCmdPath('forever');
-        if(foreverCmd){
-          ctx.foreverPath = path.dirname(foreverCmd) + "/";
-        } else {
-          console.error("forever not found, forever must be installed using 'npm install -g forever'");
-          process.exit(1);
-        }
-      }
+				var foreverCmd = getCmdPath('forever');
+				if(foreverCmd){
+				  ctx.foreverPath = path.dirname(foreverCmd) + "/";
+				} else {
+				  console.error("forever not found, forever must be installed using 'npm install -g forever'");
+				  process.exit(1);
+				}
+			}
 
 			if(options.runAsUser){
 				ctx.runAsUser = options.runAsUser;
