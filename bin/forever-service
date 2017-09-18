@@ -76,21 +76,21 @@ platforms.get(function(err, platform){
 			if(options.logrotateDateExt) ctx.logrotateDateExt = 'dateext';
 			if(options.logrotateCompress) ctx.logrotateCompress = 'compress';
 			if(options.applyUlimits) ctx.applyUlimits = true;
-            ctx.foreverPath=path.dirname(getCmdPath('forever'));
 
-			if(options.foreverPath) {
-				var fp = options.foreverPath;
-				fp = fp.trim();
+
+			if(options.foreverPath){
+				var fp = options.foreverPath.trim();
 				if(!fp.match(/\/$/)) fp = fp+'/';
 				ctx.foreverPath = fp;
 			} else {
-                if(!ctx.foreverPath){
-                    console.error("forever not found, forever must be installed using 'npm install -g forever'");
-                    process.exit(1);
-                } else {
-                    ctx.foreverPath+="/";
-                }
-            }
+        var foreverCmd = getCmdPath('forever');
+        if(foreverCmd){
+          ctx.foreverPath = path.dirname(foreverCmd) + "/";
+        } else {
+          console.error("forever not found, forever must be installed using 'npm install -g forever'");
+          process.exit(1);
+        }
+      }
 
 			if(options.runAsUser){
 				ctx.runAsUser = options.runAsUser;
