@@ -216,8 +216,3 @@ Roadmap
 Support other Linux distros, OSX, Windows etc.
 
 Contributions are welcome, please send pull requests
-
-
-Sponsored By
--------
-[Zapty - Seamless teamwork anywhere (Modern Communication, Task & Project management for teams)](http://www.zapty.com/?utm_source=forever-service&utm_medium=web&utm_campaign=forever-service)
