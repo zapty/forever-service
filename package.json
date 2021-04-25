@@ -41,7 +41,8 @@
     "debian",
     "raspbian",
     "ubuntu",
-    "busenlabs"
+    "busenlabs",
+    "almalinux"
   ],
   "bin": {
     "forever-service": "./bin/forever-service",
