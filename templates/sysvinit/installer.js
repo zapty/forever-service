@@ -6,7 +6,7 @@ exports.initialize=function(){
 
 	if(fs.existsSync('/etc/system-release')){
 		var contents = fs.readFileSync('/etc/system-release','utf8');
-		if( contents && contents.match(/(Amazon Linux)|(Red Hat)|(CentOS)|(Fedora)|(Oracle Linux)/g) ){
+		if( contents && contents.match(/(Amazon Linux)|(Red Hat)|(CentOS)|(Fedora)|(Oracle Linux)|(Rocky Linux)/g) ){
 			return {
 				os: contents,
 				platform: 'sysvinit',

@@ -24,6 +24,7 @@ Platforms supported
 * Oracle Linux
 * Elementary OS
 * BunsenLabs
+* Rocky Linux
 * more to come..
 
 Prerequisite

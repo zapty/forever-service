@@ -41,7 +41,9 @@
     "debian",
     "raspbian",
     "ubuntu",
-    "busenlabs"
+    "busenlabs",
+    "rocky",
+    "rocky linux"
   ],
   "bin": {
     "forever-service": "./bin/forever-service",
